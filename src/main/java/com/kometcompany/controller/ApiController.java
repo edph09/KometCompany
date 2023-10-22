@@ -26,6 +26,7 @@ import java.util.Map;
  * @version 1.0
  * @since 22 de Octubre de 2023
  */
+
 @RestController
 @RequestMapping("/api")
 public class ApiController {
