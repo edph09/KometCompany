@@ -2,8 +2,10 @@ package com.kometcompany.controller;
 
 import com.kometcompany.model.Customer;
 import com.kometcompany.model.Inventory;
+import com.kometcompany.model.Product;
 import com.kometcompany.service.CustomerService;
 import com.kometcompany.service.InventoryService;
+import com.kometcompany.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -35,6 +37,8 @@ public class ApiController {
     private InventoryService inventoryService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private ProductService productService;
 
     /**
      * Endpoint que muestra los productos discriminados por compania  calculando su flete final
@@ -156,6 +160,35 @@ public class ApiController {
             response.add(productDetail);
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/products")
+    public ResponseEntity<?> products(){
+
+        Map<String, Object> response = new HashMap<>();
+        List<Product> products;
+        try {
+            products = productService.listarProductos();
+        } catch (DataAccessException e){
+            response.put("Message", "Error connecting to the database");
+            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().toString()));
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if (products.isEmpty()){
+            response.put("Message", "the Company was not found ");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        List<Map<String, Object>> productDetails = new ArrayList<>();
+
+        for (Product product : products) {
+            Map<String, Object> productDetail = new HashMap<>();
+            productDetail.put("productName", product.getName());
+            productDetail.put("sinvocales", product.eliminarVocales(product.getName()));
+
+            productDetails.add(productDetail);
+        }
+        return new ResponseEntity<>(productDetails, HttpStatus.OK);
     }
 
 }

@@ -3,6 +3,9 @@ package com.kometcompany.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * clase de la entidad producto.
  *  *
@@ -83,6 +86,15 @@ public class Product {
             lastChar = currentChar;
         }
         return distinctCharCount;
+    }
+
+    public String eliminarVocales(String cadena) {
+        String res = cadena.replaceAll("[aeiouAEIOU\\W_]", "");
+        String regex = "[^A-Za-z0-9]";
+        Pattern patter = Pattern.compile(regex);
+        Matcher match = patter.matcher(res);
+        return match.replaceAll("");
+
     }
 
 }
